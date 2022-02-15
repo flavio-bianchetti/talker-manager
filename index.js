@@ -60,7 +60,7 @@ app.post(
   validatePassword,
   (_req, res) => {
     token = generateToken();
-    return res.status(200).json({ token });
+    return res.status(200).json({ token: `${token}` });
   },
 );
 
