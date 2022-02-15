@@ -45,9 +45,13 @@ app.get('/talker/:id', async (req, res) => {
 const validateEmail = require('./middleware/validateEmail');
 const validatePassword = require('./middleware/validatePassword');
 
+let token = '';
+
+// solução adaptada do site:
+// https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript
 function generateToken() {
-  const token = Math.random().toString(16).slice(2) + Math.random().toString(16).slice(2);
-  return token.substring(0, 16);
+  const newToken = Math.random().toString(16).slice(2) + Math.random().toString(16).slice(2);
+  return newToken.substring(0, 16);
 }
 
 app.post(
@@ -55,9 +59,7 @@ app.post(
   validateEmail,
   validatePassword,
   (_req, res) => {
-    // solução adaptada do site:
-    // https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript
-    const token = generateToken();
+    token = generateToken();
     return res.status(200).json({ token });
   },
 );
