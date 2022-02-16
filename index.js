@@ -64,6 +64,39 @@ app.post(
   },
 );
 
+const validateUserToken = require('./middleware/validateUserToken');
+const validateName = require('./middleware/validateName');
+const validateAge = require('./middleware/validateAge');
+const validateTalk = require('./middleware/validateTalk');
+const validateWatchedAtAndRate = require('./middleware/validateWatchedAtAndRate');
+
+app.post(
+  '/talker',
+  validateUserToken,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateWatchedAtAndRate,
+  async (req, res) => {
+    fs.readFile('./talker.json', 'utf8')
+      .then((data) => {
+        const talkerList = JSON.parse(data);
+        const { name, age, talk } = req.body;
+        const { watchedAt, rate } = talk;
+        const newTalker = {
+          id: talkerList.length + 1,
+          name,
+          age,
+          talk: { watchedAt, rate },
+        };
+        talkerList.push(newTalker);
+        fs.writeFile('./talker.json', JSON.stringify(talkerList), 'utf8');
+        return res.status(201).send(newTalker);
+      })
+      .catch((err) => res.status(500).json(err));
+  },
+);
+
 app.listen(PORT, () => {
   console.log('Online');
 });
