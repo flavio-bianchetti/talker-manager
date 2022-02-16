@@ -14,8 +14,10 @@ app.get('/', (_request, response) => {
 
 const fs = require('fs').promises;
 
+const talkerFilePath = './talker.json';
+
 app.get('/talker', async (req, res) => {
-  fs.readFile('./talker.json', 'utf8')
+  fs.readFile(talkerFilePath, 'utf8')
     .then((data) => {
       const response = JSON.parse(data);
       if (!response || response.length === 0) {
@@ -27,7 +29,7 @@ app.get('/talker', async (req, res) => {
 });
 
 app.get('/talker/:id', async (req, res) => {
-  fs.readFile('./talker.json', 'utf8')
+  fs.readFile(talkerFilePath, 'utf8')
     .then((data) => {
       const { id } = req.params;
       const talkerList = JSON.parse(data);
@@ -78,7 +80,7 @@ app.post(
   validateTalk,
   validateWatchedAtAndRate,
   async (req, res) => {
-    fs.readFile('./talker.json', 'utf8')
+    fs.readFile(talkerFilePath, 'utf8')
       .then((data) => {
         const talkerList = JSON.parse(data);
         const { name, age, talk } = req.body;
@@ -90,8 +92,36 @@ app.post(
           talk: { watchedAt, rate },
         };
         talkerList.push(newTalker);
-        fs.writeFile('./talker.json', JSON.stringify(talkerList), 'utf8');
+        fs.writeFile(talkerFilePath, JSON.stringify(talkerList), 'utf8');
         return res.status(201).send(newTalker);
+      })
+      .catch((err) => res.status(500).json(err));
+  },
+);
+
+app.put(
+  '/talker/:id',
+  validateUserToken,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateWatchedAtAndRate,
+  async (req, res) => {
+    fs.readFile(talkerFilePath, 'utf8')
+      .then((data) => {
+        const talkerList = JSON.parse(data);
+        const { name, age, talk } = req.body;
+        const { watchedAt, rate } = talk;
+        const { id } = req.params;
+        const talkerChange = {
+          id: Number(id),
+          name,
+          age,
+          talk: { watchedAt, rate },
+        };
+        const talkers = talkerList.filter((talker) => talker.id !== Number(id));
+        fs.writeFile(talkerFilePath, JSON.stringify([...talkers, talkerChange]), 'utf8');
+        return res.status(200).send(talkerChange);
       })
       .catch((err) => res.status(500).json(err));
   },
