@@ -127,6 +127,22 @@ app.put(
   },
 );
 
+app.delete(
+  '/talker/:id',
+  validateUserToken,
+  async (req, res) => {
+    fs.readFile(talkerFilePath, 'utf8')
+      .then((data) => {
+        const talkerList = JSON.parse(data);
+        const { id } = req.params;
+        const talkers = talkerList.filter((talker) => talker.id !== Number(id));
+        fs.writeFile(talkerFilePath, JSON.stringify(talkers), 'utf8');
+        return res.status(204).end();
+      })
+      .catch((err) => res.status(500).json(err));
+  },
+);
+
 app.listen(PORT, () => {
   console.log('Online');
 });
