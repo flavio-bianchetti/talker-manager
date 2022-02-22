@@ -1,7 +1,7 @@
 // solução adaptada do site:
-// https://stackoverflow.com/questions/6177975/how-to-validate-date-with-format-mm-dd-yyyy-in-javascript
+// https://stackoverflow.com/questions/10194464/javascript-dd-mm-yyyy-date-check
 const validateDateFormat = (date) => {
-  const dateFormat = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+  const dateFormat = /(0[1-9]|[12][0-9]|3[01])[/](0[1-9]|1[012])[/](19|20)\d\d/;
   if (!date.match(dateFormat)) {
     return false;
   }

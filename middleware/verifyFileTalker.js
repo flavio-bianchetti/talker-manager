@@ -2,7 +2,7 @@ const fs = require('fs').promises;
 
 const talkerFilePath = './talker.json';
 
-const verifyFileTalker = (_req, res, next) => {
+const verifyFileTalker = async (_req, res, next) => {
   fs.readFile(talkerFilePath, 'utf8')
     .then((data) => {
       const response = JSON.parse(data);
